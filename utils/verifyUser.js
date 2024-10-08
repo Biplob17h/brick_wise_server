@@ -2,7 +2,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 const verifyUser = async (req, res, next) => {
   try {
-    const token = req.cookies.brick_wise_cookie;
+    const token = await req.headers?.authorization?.split(" ")[1];
+    console.log(token)
     if (!token) {
       throw new Error("No token provided");
     }

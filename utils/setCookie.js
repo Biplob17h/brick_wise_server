@@ -10,6 +10,8 @@ const generateTokenAndSetCookie = (userId, res) => {
     httpOnly: true, // prevent XSS attacks cross-site scripting attacks
     sameSite: "strict", // CSRF attacks cross-site request forgery attacks
   });
+
+  return token;
 };
 
 export default generateTokenAndSetCookie;
