@@ -6,7 +6,9 @@ import {
   userLogin,
   updateUserProfile,
   changeUserPassword,
-  userSignUp
+  userSignUp,
+  confirmUserEmail,
+  resendConfirmEmail
 } from "../controllers/userControllers.js";
 import verifyUser from "../utils/verifyUser.js";
 
@@ -20,6 +22,9 @@ userRoute.post("/logout", userLogout);
 // All Gets
 userRoute.get("/single", verifyUser, getUser);
 userRoute.get("/all", getAllUser);
+userRoute.get("/confirm/:token", confirmUserEmail)
+userRoute.get("/email", resendConfirmEmail)
+
 
 // All Updates
 userRoute.patch("/update/profile", updateUserProfile);

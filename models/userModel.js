@@ -15,7 +15,7 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    required: true
+    required: true,
   },
   password: {
     type: String,
@@ -27,12 +27,11 @@ const userSchema = mongoose.Schema({
     enum: ["user", "admin"],
     default: "user",
   },
-  // status: {
-  //   type: String,
-  //   default: "inactive",
-  //   enum: ["active", "inactive", "blocked"],
-  // },
-  
+  status: {
+    type: String,
+    default: "inactive",
+    enum: ["active", "inactive", "blocked"],
+  },
   gender: {
     type: String,
     enum: ["male", "female"],
@@ -41,7 +40,6 @@ const userSchema = mongoose.Schema({
   },
   title: {
     type: String,
-    enum: ["Dr.", "Prof", "Prof. Dr.", ""],
     default: "",
   },
   street: {
@@ -73,7 +71,6 @@ const userSchema = mongoose.Schema({
     type: String,
     enum: ["yes", "no"],
     default: "no",
-
   },
   usTax: {
     type: String,
@@ -91,15 +88,27 @@ const userSchema = mongoose.Schema({
     required: true,
   },
   dateOfBirth: {
-     type : String,
-     default: "",
-     required: true,
-  },
-  phone : {
     type: String,
     default: "",
     required: true,
-  }
+  },
+  phone: {
+    type: String,
+    default: "",
+    required: true,
+  },
+  experience: {
+    type: String,
+    default: "",
+  },
+  investment: {
+    type: String,
+    default: "",
+  },
+  token: {
+    type: String,
+    default: "",
+  },
 });
 
 const User = mongoose.model("User", userSchema);

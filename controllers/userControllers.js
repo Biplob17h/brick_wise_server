@@ -1,9 +1,12 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import generateTokenAndSetCookie from "../utils/setCookie.js";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
 
 const userSignUp = async (req, res) => {
   try {
+    console.log(req.body);
     const { password, confirmPassword, email } = req.body;
 
     // validate email
@@ -24,17 +27,118 @@ const userSignUp = async (req, res) => {
 
     // hash password
     const hashedPassword = await bcrypt.hash(password, 12);
+    // GENARTE TOKEN
+    const token = crypto.randomBytes(32).toString("hex");
 
     // create user
-    const user = { ...req.body, password: hashedPassword };
-    const newUser = await User.create(user);
+    const user = { ...req.body, password: hashedPassword, token: token };
+    const newUser = new User(user);
 
     // save to database
     const result = await newUser.save();
+
+    // send email
+    const transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_ID,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    if (result._id) {
+      transport.sendMail({
+        from: "biplob17h@gmail.com",
+        to: email,
+        subject: "confirm email",
+        html: `
+          <html>
+          <body>
+          <h1>Wellcome to Open Mart</h1>
+          <a href='http://localhost:5000/api/v1/user/confirm/${token}'>Confirm your email</a>
+          </body>
+          </html>
+          `,
+      });
+    }
+
     // send response
     res.status(201).json({
       status: "success",
-      message: "User registered successfully",
+      message: "User created successfully",
+      result,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
+
+const confirmUserEmail = async (req, res) => {
+  try {
+    const token = req.params.token;
+    const user = await User.findOneAndUpdate(
+      { token: token },
+      { $set: { token: "", status: "active" } },
+      { new: true }
+    );
+    if (!user) {
+      return res.send(`<h1>Token is not valid</h1>`);
+    }
+    res.send(`<h1>Email confirmed successfully</h1>`);
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
+
+const resendConfirmEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({
+        status: "fail",
+        message: "User not found",
+      });
+    }
+
+    // GENARTE TOKEN
+    const token = crypto.randomBytes(32).toString("hex");
+
+    // send email
+    const transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_ID,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    transport.sendMail({
+      from: "biplob17h@gmail.com",
+      to: email,
+      subject: "confirm email",
+      html: `
+        <html>
+        <body>
+        <h1>Wellcome to Open Mart</h1>
+        <a href='http://localhost:5000/api/v1/user/confirm/${token}'>Confirm your email</a>
+        </body>
+        </html>
+        `,
+    });
+    const result = await User.findOneAndUpdate(
+      { email },
+      {
+        $set: { token: token },
+      }
+    );
+    res.status(200).json({
+      status: "success",
+      message: "Email resent successfully",
     });
   } catch (error) {
     res.status(400).json({
@@ -62,6 +166,13 @@ const userLogin = async (req, res) => {
     return res.status(401).json({
       status: "fail",
       message: "Invalid credentials",
+    });
+  }
+
+  if (user?.status === "inactive") {
+    return res.status(401).json({
+      status: "fail",
+      message: "Email not confirmed",
     });
   }
 
@@ -211,4 +322,6 @@ export {
   updateUserProfile,
   changeUserPassword,
   userLogout,
+  confirmUserEmail,
+  resendConfirmEmail,
 };
