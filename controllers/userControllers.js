@@ -54,7 +54,7 @@ const userSignUp = async (req, res) => {
           <html>
           <body>
           <h1>Wellcome to Open Mart</h1>
-          <a href='http://localhost:5000/api/v1/user/confirm/${token}'>Confirm your email</a>
+          <a href='https://brick-wise-server.onrender.com/api/v1/user/confirm/${token}'>Confirm your email</a>
           </body>
           </html>
           `,
@@ -125,7 +125,7 @@ const resendConfirmEmail = async (req, res) => {
         <html>
         <body>
         <h1>Wellcome to Open Mart</h1>
-        <a href='http://localhost:5000/api/v1/user/confirm/${token}'>Confirm your email</a>
+        <a href='https://brick-wise-server.onrender.com/api/v1/user/confirm/${token}'>Confirm your email</a>
         </body>
         </html>
         `,
