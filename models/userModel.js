@@ -98,8 +98,30 @@ const userSchema = mongoose.Schema({
     required: true,
   },
   experience: {
-    type: String,
-    default: "",
+    IsExperience: {
+      type: Boolean,
+      default: false,
+    },
+    experienceWith: {
+      type: Array,
+      default: [],
+    },
+    yearsOfExperience: {
+      type: String,
+      default: "",
+    },
+    averageInvestments: {
+      type: String,
+      default: "",
+    },
+    investmentsPerYear: {
+      type: String,
+      default: "",
+    },
+    isLoanWork: {
+      type: String,
+      default: "",
+    },
   },
   investment: {
     type: String,

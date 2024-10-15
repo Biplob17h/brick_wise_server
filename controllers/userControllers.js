@@ -6,7 +6,6 @@ import crypto from "crypto";
 
 const userSignUp = async (req, res) => {
   try {
-    console.log(req.body);
     const { password, confirmPassword, email } = req.body;
 
     // validate email
@@ -17,17 +16,10 @@ const userSignUp = async (req, res) => {
         message: "Email already exists",
       });
     }
-    // validate password
-    if (password !== confirmPassword) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Passwords do not match",
-      });
-    }
 
     // hash password
     const hashedPassword = await bcrypt.hash(password, 12);
-    // GENARTE TOKEN
+    // GENERATE TOKEN
     const token = crypto.randomBytes(32).toString("hex");
 
     // create user
@@ -53,7 +45,8 @@ const userSignUp = async (req, res) => {
         html: `
           <html>
           <body>
-          <h1>Wellcome to Open Mart</h1>
+          <h1>Welcome to Brick Wise</h1>
+          <h3>Confirm your email</h3><br/><br/><br/><br/>
           <a href='https://brick-wise-server.onrender.com/api/v1/user/confirm/${token}'>Confirm your email</a>
           </body>
           </html>
@@ -122,13 +115,14 @@ const resendConfirmEmail = async (req, res) => {
       to: email,
       subject: "confirm email",
       html: `
-        <html>
-        <body>
-        <h1>Wellcome to Open Mart</h1>
-        <a href='https://brick-wise-server.onrender.com/api/v1/user/confirm/${token}'>Confirm your email</a>
-        </body>
-        </html>
-        `,
+          <html>
+          <body>
+          <h1>Welcome to Brick Wise</h1>
+          <h3>Confirm your email</h3><br/><br/><br/><br/>
+          <a href='https://brick-wise-server.onrender.com/api/v1/user/confirm/${token}'>Confirm your email</a>
+          </body>
+          </html>
+          `,
     });
     const result = await User.findOneAndUpdate(
       { email },
@@ -166,13 +160,6 @@ const userLogin = async (req, res) => {
     return res.status(401).json({
       status: "fail",
       message: "Invalid credentials",
-    });
-  }
-
-  if (user?.status === "inactive") {
-    return res.status(401).json({
-      status: "fail",
-      message: "Email not confirmed",
     });
   }
 
